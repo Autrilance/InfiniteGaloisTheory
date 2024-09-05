@@ -118,18 +118,16 @@ open scoped Pointwise
 
 theorem IsGalois.fixingSubgroup_conjugate_of_map (σ : L ≃ₐ[K] L) : E.fixingSubgroup = (MulAut.conj σ⁻¹) • ((IntermediateField.map σ E).fixingSubgroup) := by
   ext τ
-  have h1 : τ ∈ (MulAut.conj σ⁻¹ • (IntermediateField.map σ E).fixingSubgroup : Subgroup (L ≃ₐ[K] L)) ↔ ∀ x : ((IntermediateField.map σ E) : IntermediateField K L), σ (τ (σ⁻¹ x)) = x := by
+  have h₁ : τ ∈ (MulAut.conj σ⁻¹ • (IntermediateField.map σ E).fixingSubgroup : Subgroup (L ≃ₐ[K] L)) ↔ ∀ x : ((IntermediateField.map σ E) : IntermediateField K L), σ (τ (σ⁻¹ x)) = x := by
     rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, map_inv, inv_inv, MulAut.smul_def, MulAut.conj_apply]; exact Iff.rfl
-  have h2 : τ ∈ E.fixingSubgroup ↔ ∀ x : E, τ x = x := by exact Iff.rfl
-  have h3 : ∀ x : L, (x ∈ ((IntermediateField.map σ E) : IntermediateField K L) ↔ ∃ y : E, x = σ y) := fun x ↦ (by
-    show (∃ (y : L), (y ∈ E) ∧ (σ.toFun y = x)) ↔ (∃ y : E, x = σ y)
-    exact ⟨fun ⟨y, hy, heq⟩ ↦ ⟨⟨y, hy⟩, heq.symm⟩, fun ⟨⟨y, hy⟩, heq⟩ ↦ ⟨y, hy, heq.symm⟩⟩)
-  rw [h1, h2]
+  have h₂ : τ ∈ E.fixingSubgroup ↔ ∀ x : E, τ x = x := Iff.rfl
+  have h₃ : ∀ x : L, (x ∈ ((IntermediateField.map σ E) : IntermediateField K L) ↔ ∃ y : E, x = σ y) := fun x ↦ ⟨fun ⟨y, hy, heq⟩ ↦ ⟨⟨y, hy⟩, heq.symm⟩, fun ⟨⟨y, hy⟩, heq⟩ ↦ ⟨y, hy, heq.symm⟩⟩
+  rw [h₁, h₂]
   exact ⟨
-    fun h ↦ (fun x ↦ (by obtain ⟨y, hy⟩ := (h3 x).mp x.2; rw [hy, show σ⁻¹ (σ y) = y from by exact σ.left_inv y, h y])),
+    fun h ↦ (fun x ↦ (by obtain ⟨y, hy⟩ := (h₃ x).mp x.2; rw [hy, show σ⁻¹ (σ y) = y from σ.left_inv y, h y])),
     fun h ↦ (fun x ↦ (by
-      have : σ (τ (σ⁻¹ (σ x))) = σ x := h ⟨σ x, (h3 (σ x)).mpr ⟨x, rfl⟩⟩
-      rw [show σ⁻¹ (σ x) = x from by exact σ.left_inv x, EmbeddingLike.apply_eq_iff_eq] at this
+      have : σ (τ (σ⁻¹ (σ x))) = σ x := h ⟨σ x, (h₃ (σ x)).mpr ⟨x, rfl⟩⟩
+      rw [show σ⁻¹ (σ x) = x from σ.left_inv x, EmbeddingLike.apply_eq_iff_eq] at this
       exact this))⟩
 
 theorem Subgroup.Normal.of_conjugate_fixed {G : Type*} [Group G] {H : Subgroup G} (h : ∀ g : G, (MulAut.conj g) • H = H) : H.Normal := by
